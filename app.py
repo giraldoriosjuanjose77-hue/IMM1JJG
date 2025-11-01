@@ -1,113 +1,44 @@
 import streamlit as st
-import os
-import time
-import glob
-import os
-from gtts import gTTS
+import cv2
+import numpy as np
+import pytesseract
 from PIL import Image
-import base64
 
-st.title("Conversión de Texto a Audio")
-image = Image.open('text_to_audio.png')
-st.image(image, width=350)
+st.title("Reconocimiento Óptico de Caracteres")
+
+# --- Selección del método de entrada ---
+opcion = st.radio("Selecciona ucómo prefieres subir tu imagen:", ("Cámara", "Subir imagen"))
+
+# --- Sidebar: filtro ---
 with st.sidebar:
-    st.subheader("Esrcibe y/o selecciona texto para ser escuchado.")
+    filtro = st.radio("Aplicar filtro", ('Con Filtro', 'Sin Filtro'))
 
+# --- Captura o carga de imagen ---
+img_file_buffer = None
 
-try:
-    os.mkdir("temp")
-except:
-    pass
+if opcion == "Cámara":
+    img_file_buffer = st.camera_input("Toma una foto")
+elif opcion == "Subir imagen":
+    img_file_buffer = st.file_uploader("Sube una imagen", type=["jpg", "jpeg", "png"])
 
-st.subheader("Un pequeño fragmento de poesía, cortesía de Leon de Greiff")
-st.write('Yo sé de los aromas'
-         'de amadas cabelleras…'
-         'Yo sé de los perfumes de los cuellos esbeltos'
-         'y frágiles y tibios;'
-         'de senos donde esconden sus hálitos las pomas'
-         'preferidas de Venus!'
-         '                     '
-         'Yo aspiré las redomas'
-         'donde el Nirvana enciende los sándalos simbólicos;'
-         'las sábilas y mirras del mago Zoroastro…'
-         'Mas no aspiré las sales ni los iodos del mar.'
-         '                                             '
-         'Mis labios sitibundos'
-         'no en sus odres la sed'
-         'apagaron:'
-         'no en sus odres acerbos'
-         'mitigaron la sed…'
-         'Mis labios, locos, ebrios, ávidos, vagabundos,'
-         'labios cogitabundos'
-         'que amargaron los ayes y gestos iracundos'
-         'y que unos labios —vírgenes— captaron en su red!'
-         '                                                '
-         'Hermano de las nubes'
-         'yo soy.'
-        
-        )
-           
-st.markdown(f"Quieres escucharlo?, copia el texto")
-text = st.text_area("Ingrese El texto a escuchar.")
+# --- Procesamiento de imagen ---
+if img_file_buffer is not None:
+    # Leer la imagen como arreglo de OpenCV
+    bytes_data = img_file_buffer.getvalue()
+    cv2_img = cv2.imdecode(np.frombuffer(bytes_data, np.uint8), cv2.IMREAD_COLOR)
 
-tld='com'
-option_lang = st.selectbox(
-    "Selecciona el lenguaje",
-    ("Español", "English"))
-if option_lang=="Español" :
-    lg='es'
-if option_lang=="English" :
-    lg='en'
+    # Aplicar filtro si se selecciona
+    if filtro == 'Con Filtro':
+        cv2_img = cv2.bitwise_not(cv2_img)
 
-def text_to_speech(text, tld,lg):
-    
-    tts = gTTS(text,lang=lg) # tts = gTTS(text,'en', tld, slow=False)
-    try:
-        my_file_name = text[0:20]
-    except:
-        my_file_name = "audio"
-    tts.save(f"temp/{my_file_name}.mp3")
-    return my_file_name, text
+    # Convertir a RGB para mostrar y procesar con pytesseract
+    img_rgb = cv2.cvtColor(cv2_img, cv2.COLOR_BGR2RGB)
 
+    # Mostrar imagen en pantalla
+    st.image(img_rgb, caption="Imagen procesada", use_container_width=True)
 
-#display_output_text = st.checkbox("Verifica el texto")
+    # Extraer texto
+    text = pytesseract.image_to_string(img_rgb)
 
-if st.button("convertir a Audio"):
-     result, output_text = text_to_speech(text, 'com',lg)#'tld
-     audio_file = open(f"temp/{result}.mp3", "rb")
-     audio_bytes = audio_file.read()
-     st.markdown(f"## Tú audio:")
-     st.audio(audio_bytes, format="audio/mp3", start_time=0)
-
-     #if display_output_text:
-     
-     #st.write(f" {output_text}")
-    
-#if st.button("ElevenLAabs",key=2):
-#     from elevenlabs import play
-#     from elevenlabs.client import ElevenLabs
-#     client = ElevenLabs(api_key="a71bb432d643bbf80986c0cf0970d91a", # Defaults to ELEVEN_API_KEY)
-#     audio = client.generate(text=f" {output_text}",voice="Rachel",model="eleven_multilingual_v1")
-#     audio_file = open(f"temp/{audio}.mp3", "rb")
-
-     with open(f"temp/{result}.mp3", "rb") as f:
-         data = f.read()
-
-     def get_binary_file_downloader_html(bin_file, file_label='File'):
-        bin_str = base64.b64encode(data).decode()
-        href = f'<a href="data:application/octet-stream;base64,{bin_str}" download="{os.path.basename(bin_file)}">Download {file_label}</a>'
-        return href
-     st.markdown(get_binary_file_downloader_html("audio.mp3", file_label="Audio File"), unsafe_allow_html=True)
-
-def remove_files(n):
-    mp3_files = glob.glob("temp/*mp3")
-    if len(mp3_files) != 0:
-        now = time.time()
-        n_days = n * 86400
-        for f in mp3_files:
-            if os.stat(f).st_mtime < now - n_days:
-                os.remove(f)
-                print("Deleted ", f)
-
-
-remove_files(7)
+    st.subheader("🧾 Texto Detectado:")
+    st.write(text)
