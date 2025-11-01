@@ -8,7 +8,7 @@ from PIL import Image
 import base64
 
 st.title("Conversión de Texto a Audio")
-image = Image.open('gato_raton.png')
+image = Image.open('text_to_audio.png')
 st.image(image, width=350)
 with st.sidebar:
     st.subheader("Esrcibe y/o selecciona texto para ser escuchado.")
@@ -19,13 +19,15 @@ try:
 except:
     pass
 
-st.subheader("Una pequeña Fábula.")
-st.write('¡Ay! -dijo el ratón-. El mundo se hace cada día más pequeño. Al principio era tan grande que le tenía miedo. '  
-         ' Corría y corría y por cierto que me alegraba ver esos muros, a diestra y siniestra, en la distancia. ' 
-         ' Pero esas paredes se estrechan tan rápido que me encuentro en el último cuarto y ahí en el rincón está '  
-         ' la trampa sobre la cual debo pasar. Todo lo que debes hacer es cambiar de rumbo dijo el gato...y se lo comió. ' 
-         '  '
-         ' Franz Kafka.'
+st.subheader("Un pequeño fragmento de poesía, cortesía de Leon de Greiff")
+st.write('Músicos, rápsodas, prosistas,'
+         'poetas, poetas, poetas,'
+         'pintores, caricaturistas,'
+         'eruditos, nimios estetas;'
+         'románticos o clasicistas,'
+         'y decadentes —si os parece—'
+         'pero, eso sí, locos y artistas'
+         'los Panidas éramos trece!'
         
         )
            
