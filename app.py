@@ -20,14 +20,30 @@ except:
     pass
 
 st.subheader("Un pequeño fragmento de poesía, cortesía de Leon de Greiff")
-st.write('Músicos, rápsodas, prosistas,'
-         'poetas, poetas, poetas,'
-         'pintores, caricaturistas,'
-         'eruditos, nimios estetas;'
-         'románticos o clasicistas,'
-         'y decadentes —si os parece—'
-         'pero, eso sí, locos y artistas'
-         'los Panidas éramos trece!'
+st.write('Yo sé de los aromas'
+         'de amadas cabelleras…'
+         'Yo sé de los perfumes de los cuellos esbeltos'
+         'y frágiles y tibios;'
+         'de senos donde esconden sus hálitos las pomas'
+         'preferidas de Venus!'
+         '                     '
+         'Yo aspiré las redomas'
+         'donde el Nirvana enciende los sándalos simbólicos;'
+         'las sábilas y mirras del mago Zoroastro…'
+         'Mas no aspiré las sales ni los iodos del mar.'
+         '                                             '
+         'Mis labios sitibundos'
+         'no en sus odres la sed'
+         'apagaron:'
+         'no en sus odres acerbos'
+         'mitigaron la sed…'
+         'Mis labios, locos, ebrios, ávidos, vagabundos,'
+         'labios cogitabundos'
+         'que amargaron los ayes y gestos iracundos'
+         'y que unos labios —vírgenes— captaron en su red!'
+         '                                                '
+         'Hermano de las nubes'
+         'yo soy.'
         
         )
            
